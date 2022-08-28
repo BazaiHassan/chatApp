@@ -1,11 +1,10 @@
-{% from 'form_helper.html' import displayField() %}
+{% from 'form_helper.html' import displayField %}
 
 {% extends "prelogin_layout.html" %}
 
 {% block title %} Registeration {% endblock %}
 
 {% block content %}
-    <h1>Get Started</h1>
 
     <form action="{{ url_for('index') }}", method="POST">
 
