@@ -1,6 +1,19 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import InputRequired, Length, EqualTo
+from wtforms.validators import InputRequired, Length, EqualTo, ValidationError
+from models import User
+
+
+def invalid_credentials(form, field):
+    username_entered = form.username.data
+    password_entered = field.data
+
+    # Check Username is valid
+    user_object = User.query.filter_by(username=username_entered).first()
+    if user_object is None:
+        raise ValidationError('Usename or Password is incorrect')
+    elif password_entered != user_object.password:
+        raise ValidationError('Usename or Password is incorrect')
 
 
 
@@ -27,7 +40,21 @@ class RegistrationForm(FlaskForm):
         Length(min=4, max=25, message="Password must match"),
     ])
 
+    def validate_username(self, username):
+        user_object = User.query.filter_by(username=username.data).first()
+        if user_object:
+            raise "Username already exists. Select a different username."
+
     submit_button = SubmitField('Create')
 
+
+
+
+class LoginForm(FlaskForm):
+    """Login Form"""
+
+    username = StringField('username', validators=[InputRequired(message="Username required")])
+    password = PasswordField('password', validators=[InputRequired(message="Password required"), invalid_credentials])
+    submit_button = SubmitField('Login')
 
 
