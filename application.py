@@ -2,6 +2,7 @@ from crypt import methods
 from flask import Flask, render_template, redirect, url_for
 from wtform_fields import *
 from models import *
+from passlib.hash import pbkdf2_sha256
 
 
 
@@ -19,8 +20,12 @@ def index():
     if reg_form.validate_on_submit():
         username = reg_form.username.data
         password = reg_form.password.data
+
+        # Hash Password
+        hashed_pswd = pbkdf2_sha256.hash(password)
+        #pbkdf2_sha256.using(rounds=1000, salt_size=8).hash(password)
         
-        user = User(username=username, password = password)
+        user = User(username=username, password = hashed_pswd)
         db.session.add(user)
         db.session.commit()
         return redirect(url_for('login'))
